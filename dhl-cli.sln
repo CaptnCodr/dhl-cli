@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "dhl-cli", "dhl-cli.fsproj", "{FE4ED260-426E-4443-B90E-93028BD3F44D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE4ED260-426E-4443-B90E-93028BD3F44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE4ED260-426E-4443-B90E-93028BD3F44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE4ED260-426E-4443-B90E-93028BD3F44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE4ED260-426E-4443-B90E-93028BD3F44D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9AE25AED-8238-4110-B253-17EF3C36D795}
+	EndGlobalSection
+EndGlobal

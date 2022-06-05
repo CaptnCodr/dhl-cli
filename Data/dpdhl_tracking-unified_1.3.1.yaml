@@ -1,0 +1,647 @@
+openapi: 3.0.0
+info:
+  title: DHL Shipment Tracking API
+  version: "1.3.1"
+  contact:
+    name: "Support"
+    url: "https://developer.dhl.com/help-center"
+  description: >-
+    ### DHL Shipment Tracking API
+
+    The unified DHL tracking experience.
+
+    Detailed documentation and release notes are available at https://developer.dhl/api-reference/shipment-tracking. 
+
+servers:
+  - url: https://api-eu.dhl.com/track
+    description: Production server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  '/shipments':
+    x-summary: Shipments
+    x-description: Information about shipments identified by the tracking number parameter.
+
+    get:
+      summary: Retrieve Tracking Information
+      description: >-
+        Retrieves the tracking information for shipments(s). The shipments are identified using the required `trackingNumber` query parameter.
+      parameters:
+        - $ref: '#/components/parameters/trackingNumber'
+        - $ref: '#/components/parameters/service'
+        - $ref: '#/components/parameters/requesterCountryCode'
+        - $ref: '#/components/parameters/originCountryCode'
+        - $ref: '#/components/parameters/recipientPostalCode'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: >-
+           Shipments information for given trackingNumber were found and retrieved
+          headers:
+            Content-Language:
+              schema:
+                type: string
+                default: en
+                x-example: en
+            Link:
+              schema:
+                type: string
+                default: >-
+                  <https://api-eu.dhl.com/track/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+                x-example: >-
+                  <https://api-eu.dhl.com/track/context>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/supermodelIoLogisticsTrackingShipments'
+
+        '404':
+          $ref: '#/components/responses/shipmentNotFound'
+
+components:
+  #
+  # Security
+  #
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: DHL-API-Key
+
+  #
+  # Parameters
+  #
+  parameters:
+    trackingNumber:
+      name: trackingNumber
+      in: query
+      description: >-
+        The tracking number of the shipment for which to return the information.
+      required: true
+      schema:
+        type: string
+        default: '00340434292135100179'
+
+    service:
+      name: service
+      in: query
+      description: >-
+        Hint which service (provider) should be used to resolve the tracking number.
+      required: false
+      schema:
+        type: string
+        enum:
+          - express   # Express (XMLPI-ITS)
+          - parcel-de # eCS DE (Parcel DE/NOLP)
+          - ecommerce # eCS (Americas/WebTrack)
+          - dgf       # DGF Global Forwarding
+          - parcel-uk # eCS UK (Parcel UK)
+          - post-de   # Post Germany (Track Trace Brief)
+          - sameday   # DGF SameDay
+          - freight   # Freight (Active Tracing)
+          - parcel-nl # eCS NL (Parcel BNL/PDS)
+          - parcel-pl # eCS PL (Parcel PL/TNT)
+          - dsc       # DSC (Connected View)
+
+    language:
+      name: language
+      in: query
+      description: >-
+        ISO 639-1 2-character language code for the response.
+
+        This parameter serves as an indication of the client preferences ONLY. Language availability depends on the service used. The actual response language is indicated by the Content-Language header.
+      required: false
+      schema:
+        type: string
+        default: en
+        x-example: en
+
+    requesterCountryCode:
+      name: requesterCountryCode
+      in: query
+      description: >-
+        Optional [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code represents country of the consumer of the API response. It optimizes the return of the API response.
+      required: false
+      schema:
+        type: string
+        x-example: 'DE'
+
+    originCountryCode:
+      name: originCountryCode
+      in: query
+      description: >-
+        Optional [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code of the shipment origin to further qualify the shipment tracking number (`trackingNumber`) parameter of the request.
+
+        This parameter is necessary to search for the shipment in dsc service.
+      required: false
+      schema:
+        type: string
+        x-example: 'DE'
+
+    recipientPostalCode:
+      name: recipientPostalCode
+      in: query
+      description: >-
+        Postal code of the destination address to
+
+        * further qualify the shipment tracking number (trackingNumber) parameter of the request or
+
+        * parcel-nl and parcel-de services to display full set of data in the response.
+      required: false
+      schema:
+        type: string
+
+    offset:
+      name: offset
+      in: query
+      description: >-
+        Pagination parameter. Offset from the start of the result set at which to retrieve the remainder of the results (if any).
+      required: false
+      schema:
+        type: number
+        default: 0
+        x-example: 5
+
+    limit:
+      name: limit
+      in: query
+      description: >-
+        Pagination parameter. Maximal number of results to retireve.
+      required: false
+      schema:
+        type: number
+        default: 5
+        x-example: 5
+
+  #
+  # Responses
+  #
+  responses:
+    unauthorizedError:
+      description: Unauthorized
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            default: application/problem+json
+        Content-Language:
+          schema:
+            type: string
+            default: en
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
+
+    shipmentNotFound:
+      description: Shipment was not found
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            default: application/problem+json
+        Content-Language:
+          schema:
+            type: string
+            default: en
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
+            example:
+              title: 'No result found'
+              detail: 'No shipment with given tracking number found.'
+              status: 404
+              instance: '/shipment/8264715546'
+
+    internalError:
+      description: Internal Error
+      headers:
+        Content-Type:
+          schema:
+            type: string
+            default: application/problem+json
+        Content-Language:
+          schema:
+            type: string
+            default: en
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
+
+  # DO NOT EDIT
+  # This definitions section is automatically generated by supermodel.io
+  #
+  # http://supermodel.io
+  # https://github.com/supermodel/supermodel-cli
+  schemas:
+    supermodelIoLogisticsTrackingProofOfDelivery:
+      title: Proof of Delivery
+      type: object
+      properties:
+        timestamp:
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+          example: '2018-09-05T16:33:00Z'
+        signatureUrl:
+          type: string
+        documentUrl:
+          type: string
+          example: 'https://webpod.dhl.com/webPOD/DHLePODRequest'
+        signed:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingPerson'
+    supermodelIoLogisticsTrackingShipment:
+      title: Shipment
+      type: object
+      properties:
+        id:
+          type: string
+          example: 7777777770
+        service:
+          type: string
+          enum:
+            - freight
+            - express
+            - post-de
+            - parcel-de
+            - parcel-nl
+            - parcel-pl
+            - dsc
+            - dgf
+            - ecommerce
+          example: express
+        origin:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingPlace'
+        destination:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingPlace'
+        status:
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingShipmentEvent'
+        estimatedTimeOfDelivery:
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+          example: '2018-08-03T00:00:00Z'
+        estimatedDeliveryTimeFrame:
+          type: object
+          properties:
+            estimatedFrom:
+              allOf:
+                - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+              example: '2018-08-03T00:00:00Z'
+            estimatedThrough:
+              allOf:
+                - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+              example: '2018-08-03T22:00:00Z'
+        estimatedTimeOfDeliveryRemark:
+          example: By End of Day
+        serviceUrl:
+          example: 'http://www.dhl.de/de/privatkunden.html?piececode=7777777770'
+        rerouteUrl:
+          example: >-
+            https://www.dhl.de/de/privatkunden.html?piececode=7777777770&verfuegen_selected_tab=FIRST
+        details:
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingShipmentDetails'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/supermodelIoLogisticsTrackingShipmentEvent'
+    supermodelIoLogisticsTrackingShipmentDetails:
+      title: Shipment Details
+      type: object
+      properties:
+        carrier:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingOrganization'
+        product:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingProduct'
+        receiver:
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingOrganization'
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingPerson'
+        sender:
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingOrganization'
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingPerson'
+        proofOfDelivery:
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingProofOfDelivery'
+        totalNumberOfPieces:
+          type: number
+          example: 8
+        pieceIds:
+          type: array
+          items:
+            type: string
+          example:
+            - JD014600006281230704
+            - JD014600002708681600
+            - JD014600006615052259
+            - JD014600006615052264
+            - JD014600006615052265
+            - JD014600006615052268
+            - JD014600006615052307
+            - JD014600002266382340
+            - JD014600002659593446
+            - JD014600006101653481
+            - JD014600006614884499
+        weight:
+          type: object
+          example:
+            value: 253.5
+            unitText: kg
+        volume:
+          type: object
+          example:
+            value: 12600
+        loadingMeters:
+          type: number
+          example: 1.5
+        dimensions:
+          type: object
+          properties:
+            width:
+              type: object
+            height:
+              type: object
+            length:
+              type: object
+          example:
+            width:
+              value: 20
+              unitText: cm
+            height:
+              value: 18
+              unitText: cm
+            length:
+              value: 35
+              unitText: cm
+        references:
+          type: array
+          items:
+            type: object
+            properties:
+              number:
+                type: string
+              type:
+                type: string
+                enum:
+                  - customer-reference
+                  - customer-confirmation-number
+                  - local-tracking-number
+                  - ecommerce-number
+                  - housebill
+                  - masterbill
+                  - container-number
+                  - shipment-id
+                  - domestic-consignment-id
+                  - reference
+          example:
+            number: YZ3892406173
+            type: customer-reference
+        'dgf:routes':
+          type: array
+          items:
+            $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfRoute'
+    supermodelIoLogisticsTrackingShipmentEvent:
+      title: Shipment Event
+      type: object
+      properties:
+        timestamp:
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+          example: '2018-03-02T07:53:47Z'
+        location:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingPlace'
+        statusCode:
+          type: string
+          enum:
+            - pre-transit
+            - transit
+            - delivered
+            - failure
+            - unknown
+        status:
+          type: string
+          example: DELIVERED
+        description:
+          type: string
+          example: JESSICA
+        pieceIds:
+          type: array
+          items:
+            type: string
+          example:
+            - JD014600006281230701
+            - JD014600006281230702
+            - JD014600006281230703
+        remark:
+          type: string
+          example: The shipment is pending completion of customs inspection.
+        nextSteps:
+          type: string
+          example: The status will be updated following customs inspection.
+    supermodelIoLogisticsTrackingShipments:
+      title: Shipments
+      type: object
+      properties:
+        url:
+          type: string
+          example: /shipments?trackingNumber=7777777770?offset=0&limit=5
+        prevUrl:
+          type: string
+          example: /shipments?trackingNumber=7777777770?offset=0&limit=5
+        nextUrl:
+          type: string
+          example: /shipments?trackingNumber=7777777770?offset=5&limit=5
+        firstUrl:
+          type: string
+          example: /shipments?trackingNumber=7777777770?offset=0&limit=5
+        lastUrl:
+          type: string
+          example: /shipments?trackingNumber=7777777770?offset=10&limit=5
+        shipments:
+          type: array
+          items:
+            $ref: '#/components/schemas/supermodelIoLogisticsTrackingShipment'
+        possibleAdditionalShipmentsUrl:
+          type: array
+          items:
+            type: string
+          example:
+            - /shipments?trackingNumber=7777777770&service=parcel-de
+            - /shipments?trackingNumber=7777777770&service=parcel-nl
+    supermodelIoLogisticsTrackingApiProblemDetail:
+      ###$ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
+      title: Problem Detail
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: number
+        detail:
+          type: string
+        instance:
+          type: string
+
+    supermodelIoLogisticsTrackingDgfAirport:
+      title: DGF Airport
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfLocation'
+      properties:
+        'dgf:locationCode':
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoSchemaorgPropertiesIataCode'
+          example: AMS
+        countryCode:
+          type: string
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoGs1PropertiesCountryCode'
+          example: NL
+    supermodelIoLogisticsTrackingDgfLocation:
+      title: DGF Location
+      type: object
+      properties:
+        'dgf:locationName':
+          type: string
+          example: GOTHENBURG
+    supermodelIoLogisticsTrackingDgfRoute:
+      title: DGF Route
+      type: object
+      properties:
+        'dgf:vesselName':
+          type: string
+          example: MAERSK SARAT
+        'dgf:voyageFlightNumber':
+          type: string
+          example: TR TRUCK
+        'dgf:airportOfDeparture':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfAirport'
+        'dgf:airportOfDestination':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfAirport'
+        'dgf:estimatedDepartureDate':
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+          example: '2017-10-10T09:00:00'
+        'dgf:estimatedArrivalDate':
+          allOf:
+            - $ref: '#/components/schemas/supermodelIoLogisticsSupportingTimestamp'
+          example: '2017-20-10T09:00:00'
+        'dgf:placeOfAcceptance':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfLocation'
+        'dgf:portOfLoading':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfLocation'
+        'dgf:portOfUnloading':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfLocation'
+        'dgf:placeOfDelivery':
+          $ref: '#/components/schemas/supermodelIoLogisticsTrackingDgfLocation'
+    supermodelIoLogisticsSupportingTimestamp:
+      title: Timestamp
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoSchemaorgDateTime'
+        - $ref: '#/components/schemas/supermodelIoSchemaorgDate'
+      example: '2018-03-02T07:53:47Z'
+    supermodelIoSchemaorgDateTime:
+      title: DateTime
+      type: string
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoSchemaorgDataType'
+    supermodelIoSchemaorgDataType:
+      title: DataType
+    supermodelIoSchemaorgDate:
+      title: Date
+      type: string
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoSchemaorgDataType'
+    supermodelIoLogisticsSupportingPerson:
+      title: Person
+      type: object
+      properties:
+        familyName:
+          type: string
+        givenName:
+          type: string
+        name:
+          type: string
+      example:
+        '@type': Person
+        familyName: Doe
+        givenName: John
+        name: John
+    supermodelIoLogisticsSupportingPlace:
+      title: Place
+      type: object
+      properties:
+        address:
+          type: object
+          properties:
+            countryCode:
+              type: string
+              allOf:
+                - $ref: '#/components/schemas/supermodelIoGs1PropertiesCountryCode'
+            postalCode:
+              type: string
+            addressLocality:
+              type: string
+            streetAddress:
+              type: string
+      example:
+        address:
+          countryCode: NL
+          postalCode: 1043 AG
+          addressLocality: 'Oderweg 2, AMSTERDAM'
+    supermodelIoGs1PropertiesCountryCode:
+      title: Country Code
+      type: string
+    supermodelIoLogisticsSupportingOrganization:
+      title: Organization
+      type: object
+      properties:
+        organizationName:
+          type: string
+      example:
+        '@type': Organization
+        organizationName: EXPRESS
+    supermodelIoLogisticsSupportingProduct:
+      title: Product
+      type: object
+      properties:
+        productName:
+          type: string
+      example:
+        productName: UNKNOWN - Product unknown
+    supermodelIoSchemaorgPropertiesIataCode:
+      title: iataCode
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoSchemaorgText'
+    supermodelIoSchemaorgText:
+      title: Text
+      type: string
+      allOf:
+        - $ref: '#/components/schemas/supermodelIoSchemaorgDataType'
+    supermodelIoLogisticsApiProblemDetail:
+      title: Problem Detail
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: number
+        detail:
+          type: string
+        instance:
+          type: string

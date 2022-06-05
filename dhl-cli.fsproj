@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>dhl</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Data\dpdhl_tracking-unified_1.3.1.yaml" />
+    <None Include="Data\sample.csv" />
+    <Compile Include="Arguments.fs" />
+    <Compile Include="Settings.fs" />
+    <Compile Include="AuthHandler.fs" />
+    <Compile Include="Repository.fs" />
+    <Compile Include="ShipmentHandler.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <Import Project=".paket\Paket.Restore.targets" />
+</Project>
