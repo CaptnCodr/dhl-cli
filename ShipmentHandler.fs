@@ -30,7 +30,4 @@ module ShipmentHandler =
             for number in Repository.loadTrackingNumbers() do
                 let! shipments = fetchTrackingNumber number
                 return shipments |> String.concat Environment.NewLine |> printfn "%s"
-        } 
-        |> Async.AwaitTask
-        |> Async.RunSynchronously   
-
+        } |> Async.AwaitTask |> Async.RunSynchronously
