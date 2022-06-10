@@ -17,11 +17,16 @@ module Arguments =
     type CliArguments = 
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-n")>] Number of ParseResults<TrackingNumbersArgs>
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-u")>] Update
-
+        
+        | [<CliPrefix(CliPrefix.None);AltCommandLine("-s")>] SetKey of string
+        | [<CliPrefix(CliPrefix.None);AltCommandLine("-k")>] GetKey
+        | [<CliPrefix(CliPrefix.None);AltCommandLine("-v")>] Version
+        
         interface IArgParserTemplate with
             member this.Usage =
                 match this with 
                 | Number _ -> "The tracking number options."
                 | Update -> "Updates all tracking events."
-
-
+                | SetKey _ -> "Sets the API key."
+                | GetKey -> "Gets the API key."
+                | Version -> "Gets the current version of this binary."

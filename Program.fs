@@ -1,10 +1,11 @@
 ﻿namespace Dhl
 
-open System
 open Argu
+open System
+open System.Reflection
 open Arguments
 
-module Program =     
+module Program =
 
     let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) : unit =
         match (parser.Parse args).GetAllResults() with
@@ -23,6 +24,16 @@ module Program =
 
         | [ Update ] -> 
             ShipmentHandler.loadTrackingNumbers ()
+
+        | [ SetKey k ] -> 
+            k |> Settings.setSystemKey
+            "Key set!" |> printfn "%s"
+
+        | [ GetKey ] -> 
+            Settings.getSystemKey() |> printfn "%s"
+
+        | [ Version ] -> 
+            Assembly.GetExecutingAssembly().GetName().Version |> string |> printfn "%s"
 
         | _ -> parser.PrintUsage() |> printfn "%s"
 
