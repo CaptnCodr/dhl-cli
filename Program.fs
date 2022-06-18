@@ -4,50 +4,71 @@ open Argu
 open System
 open System.Reflection
 open Arguments
+open ShipmentHandler
 
 module Program =
 
-    let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) : unit =
+    let esc = string (char 0x1B)
+    let endChar = "[0m"
+
+    let statusCodeToColor (code: string) = 
+        match code with 
+        | "pre-transit" -> "[31;1m"
+        | "transit" -> "[93;1m"
+        | "delivered" -> "[32;1m"
+        | "failure" -> "[94;1m"
+        | "unknown" | _ -> "[90;1m"
+
+    let buildColoredLine (element: string * string) =
+        $"{esc}{element |> fst |> statusCodeToColor}{element |> snd}{esc}{endChar}"
+
+    let printTrackingNumberLines (elements: seq<string * string>) =
+        elements
+        |> Seq.map buildColoredLine
+        |> String.concat Environment.NewLine
+        
+
+    let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) =
         match (parser.Parse args).GetAllResults() with
         | [ Number n ] -> 
 
             match n.GetAllResults() with 
-
             | [ Add a ] -> 
-                a |> TrackingNumber |> Repository.add |> ignore
-                printfn $"{a} added!"
+                TrackingNumber(a) |> Repository.add
 
             | [ Remove r ] -> 
-                r |> TrackingNumber |> Repository.remove |> ignore
-                printfn $"{r} removed!"
+                TrackingNumber(r) |> Repository.remove
 
-            | _ -> parser.PrintUsage() |> printfn "%s"
+            | _ -> parser.PrintUsage()
 
         | [ Detail d ] -> 
-            let details = d |> TrackingNumber |> ShipmentHandler.loadTrackingNumberDetail
-            details |> Seq.iter (printfn "%s")
+            TrackingNumber(d)
+            |> loadTrackingNumberDetail 
+            |> printTrackingNumberLines
 
         | [ Update ] -> 
-            Repository.loadTrackingNumbers() |> ShipmentHandler.loadTrackingNumbers
+            Repository.loadTrackingNumbers() 
+            |> loadTrackingNumbers 
+            |> printTrackingNumberLines
 
         | [ SetKey k ] -> 
             k |> Settings.setSystemKey
-            "Key set!" |> printfn "%s"
+            "Key set!"
 
         | [ GetKey ] -> 
-            Settings.getSystemKey() |> printfn "%s"
+            Settings.getSystemKey()
 
         | [ Version ] -> 
-            Assembly.GetExecutingAssembly().GetName().Version |> string |> printfn "%s"
+            Assembly.GetExecutingAssembly().GetName().Version |> string
 
-        | _ -> parser.PrintUsage() |> printfn "%s"
+        | _ -> parser.PrintUsage()
 
     [<EntryPoint>]
     let main ([<ParamArray>] args: string[]) : int =
     
         try 
             (ArgumentParser.Create<CliArguments>(), args)
-            ||> runCommands 
+            ||> runCommands |> printfn "%s"
         with 
         | ex -> eprintfn $"{ex.Message}"
 

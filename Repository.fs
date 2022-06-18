@@ -29,8 +29,11 @@ module Repository =
         |> fun rows -> rows.Append [ new TrackingNumbers.Row (number) ]
         |> saveFile
 
+        $"{number} added!"
+
     let remove (TrackingNumber(number)) = 
         loadFile()
         |> fun file -> file.Filter (fun item -> item.TrackingNumber <> number)
         |> saveFile
-        
+
+        $"{number} removed!"

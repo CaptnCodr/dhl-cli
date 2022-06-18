@@ -18,23 +18,19 @@ module ShipmentHandler =
         |> DhlSchema.Client
 
     let printShipmentLine (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        $"{shipment.Id} @ ({DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}"
+        (shipment.Status.StatusCode, $"{shipment.Id} @ ({DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
 
     let fetchTrackingNumber (TrackingNumber(number)) =
         task {
             let! x = client.GetShipments(number, language="de")
             return x.Shipments |> Seq.map printShipmentLine
-        }
-
-    let loadTrackingNumbers numbers =
-        task {
-            for number in numbers do
-                let! shipments = fetchTrackingNumber number
-                return shipments |> String.concat Environment.NewLine |> printfn "%s"
         } |> Async.AwaitTask |> Async.RunSynchronously
 
+    let loadTrackingNumbers numbers =
+        numbers |> Seq.collect fetchTrackingNumber
+
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        $"{DateTime.Parse(event.Timestamp.ToString())}: {event.Status}"
+        (event.StatusCode, $"{DateTime.Parse(event.Timestamp.ToString())}: {event.Status}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) = 
         task {
