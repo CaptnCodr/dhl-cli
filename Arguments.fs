@@ -4,6 +4,8 @@ open Argu
 
 module Arguments =
 
+    type TrackingNumber = TrackingNumber of string
+
     type TrackingNumbersArgs =
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-a")>] Add of string
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-r")>] Remove of string
@@ -16,6 +18,7 @@ module Arguments =
 
     type CliArguments = 
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-n")>] Number of ParseResults<TrackingNumbersArgs>
+        | [<CliPrefix(CliPrefix.None);AltCommandLine("-d")>] Detail of string
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-u")>] Update
         
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-s")>] SetKey of string
@@ -26,6 +29,7 @@ module Arguments =
             member this.Usage =
                 match this with 
                 | Number _ -> "The tracking number options."
+                | Detail _ -> "Shows tracking details about the given number."
                 | Update -> "Updates all tracking events."
                 | SetKey _ -> "Sets the API key."
                 | GetKey -> "Gets the API key."

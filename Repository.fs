@@ -4,10 +4,9 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open System
 open System.IO
+open Arguments
 
 type TrackingNumbers = CsvProvider<"./Data/sample.csv", Separators=";", ResolutionFolder=__SOURCE_DIRECTORY__>
-
-type TrackingNumberRecord = { TrackingNumber: string }
 
 module Repository =
 
@@ -23,15 +22,15 @@ module Repository =
 
     let loadTrackingNumbers () =
         loadFile().Rows
-        |> Seq.map (fun r -> { TrackingNumber = r.TrackingNumber })
+        |> Seq.map (fun r -> TrackingNumber(r))
 
-    let add (record: TrackingNumberRecord) =
+    let add (TrackingNumber(number)) =
         loadFile()
-        |> fun rows -> rows.Append [ new TrackingNumbers.Row (record.TrackingNumber) ]
+        |> fun rows -> rows.Append [ new TrackingNumbers.Row (number) ]
         |> saveFile
 
-    let remove (record: TrackingNumberRecord) = 
+    let remove (TrackingNumber(number)) = 
         loadFile()
-        |> fun file -> file.Filter (fun item -> item.TrackingNumber <> record.TrackingNumber)
+        |> fun file -> file.Filter (fun item -> item.TrackingNumber <> number)
         |> saveFile
         

@@ -10,20 +10,25 @@ module Program =
     let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) : unit =
         match (parser.Parse args).GetAllResults() with
         | [ Number n ] -> 
+
             match n.GetAllResults() with 
 
             | [ Add a ] -> 
-                { TrackingNumber = a } |> Repository.add |> ignore
+                a |> TrackingNumber |> Repository.add |> ignore
                 printfn $"{a} added!"
 
             | [ Remove r ] -> 
-                { TrackingNumber = r } |> Repository.remove |> ignore
+                r |> TrackingNumber |> Repository.remove |> ignore
                 printfn $"{r} removed!"
 
             | _ -> parser.PrintUsage() |> printfn "%s"
 
+        | [ Detail d ] -> 
+            let details = d |> TrackingNumber |> ShipmentHandler.loadTrackingNumberDetail
+            details |> Seq.iter (printfn "%s")
+
         | [ Update ] -> 
-            ShipmentHandler.loadTrackingNumbers ()
+            Repository.loadTrackingNumbers() |> ShipmentHandler.loadTrackingNumbers
 
         | [ SetKey k ] -> 
             k |> Settings.setSystemKey
