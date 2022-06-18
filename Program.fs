@@ -8,9 +8,6 @@ open ShipmentHandler
 
 module Program =
 
-    let esc = string (char 0x1B)
-    let endChar = "[0m"
-
     let statusCodeToColor (code: string) = 
         match code with 
         | "pre-transit" -> "[31;1m"
@@ -20,13 +17,13 @@ module Program =
         | "unknown" | _ -> "[90;1m"
 
     let buildColoredLine (element: string * string) =
-        $"{esc}{element |> fst |> statusCodeToColor}{element |> snd}{esc}{endChar}"
+        let esc = string (char 0x1B)
+        $"{esc}{element |> fst |> statusCodeToColor}{element |> snd}{esc}[0m"
 
-    let printTrackingNumberLines (elements: seq<string * string>) =
+    let printTrackingNumberLines elements =
         elements
         |> Seq.map buildColoredLine
         |> String.concat Environment.NewLine
-        
 
     let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) =
         match (parser.Parse args).GetAllResults() with

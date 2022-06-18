@@ -10,15 +10,15 @@ type TrackingNumbers = CsvProvider<"./Data/sample.csv", Separators=";", Resoluti
 
 module Repository =
 
-    let private Path () = 
+    let private path = 
         (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dhl.csv")
         |> Path.Combine
 
     let loadFile () =
-        Path() |> TrackingNumbers.Load
+        path |> TrackingNumbers.Load
 
     let saveFile (file: CsvFile<TrackingNumbers.Row>) =
-        Path() |> file.Save
+        path |> file.Save
 
     let loadTrackingNumbers () =
         loadFile().Rows
