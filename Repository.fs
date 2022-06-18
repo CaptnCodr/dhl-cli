@@ -4,9 +4,10 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open System
 open System.IO
-open Arguments
 
 type TrackingNumbers = CsvProvider<"./Data/sample.csv", Separators=";", ResolutionFolder=__SOURCE_DIRECTORY__>
+
+type TrackingNumber = TrackingNumber of string
 
 module Repository =
 

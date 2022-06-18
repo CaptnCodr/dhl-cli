@@ -4,8 +4,6 @@ open Argu
 
 module Arguments =
 
-    type TrackingNumber = TrackingNumber of string
-
     type TrackingNumbersArgs =
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-a")>] Add of string
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-r")>] Remove of string

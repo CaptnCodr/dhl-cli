@@ -3,7 +3,6 @@
 open SwaggerProvider
 open System
 open System.Net.Http
-open Arguments
 
 module ShipmentHandler =
 
