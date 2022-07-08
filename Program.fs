@@ -39,9 +39,22 @@ module Program =
             | _ -> parser.PrintUsage()
 
         | [ Detail d ] -> 
-            TrackingNumber(d)
-            |> loadTrackingNumberDetail 
-            |> printTrackingNumberLines
+
+            match d with 
+            | l when l.Length < 7 -> 
+
+                    match Int32.TryParse(l) with 
+                    | true, i -> Repository.loadTrackingNumbers()
+                                 |> fun n -> n |> Seq.toArray |> Array.tryItem i
+                                 |> function 
+                                 | Some v -> v |> loadTrackingNumberDetail |> printTrackingNumberLines 
+                                 | None -> "No tracking number under this index."
+                    | (_,_) -> "Index not parseable."
+                    
+            | _ ->  TrackingNumber(d)
+                    |> loadTrackingNumberDetail 
+                    |> printTrackingNumberLines
+
 
         | [ Update ] -> 
             Repository.loadTrackingNumbers() 
