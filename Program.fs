@@ -4,6 +4,7 @@ open Argu
 open System
 open System.Reflection
 open Arguments
+open Resources
 open ShipmentHandler
 
 module Program =
@@ -48,8 +49,8 @@ module Program =
                                  |> fun n -> n |> Seq.toArray |> Array.tryItem i
                                  |> function 
                                  | Some v -> v |> loadTrackingNumberDetail |> printTrackingNumberLines 
-                                 | None -> "No tracking number under this index."
-                    | (_,_) -> "Index not parseable."
+                                 | None -> NoTrackingNumber.ResourceString
+                    | (_,_) -> IndexNotParsable.ResourceString
                     
             | _ ->  TrackingNumber(d)
                     |> loadTrackingNumberDetail 
@@ -63,7 +64,7 @@ module Program =
 
         | [ SetKey k ] -> 
             k |> Settings.setSystemKey
-            "Key set!"
+            Key_Set.ResourceString
 
         | [ GetKey ] -> 
             Settings.getSystemKey()

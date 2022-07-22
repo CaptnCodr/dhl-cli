@@ -4,6 +4,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open System
 open System.IO
+open Resources
 
 type TrackingNumbers = CsvProvider<"./Data/sample.csv", Separators=";", ResolutionFolder=__SOURCE_DIRECTORY__>
 
@@ -30,11 +31,11 @@ module Repository =
         |> fun rows -> rows.Append [ new TrackingNumbers.Row (number) ]
         |> saveFile
 
-        $"{number} added!"
+        Number_Added.FormattedString(number)
 
     let remove (TrackingNumber(number)) = 
         loadFile()
         |> fun file -> file.Filter (fun item -> item.TrackingNumber <> number)
         |> saveFile
 
-        $"{number} removed!"
+        Number_Removed.FormattedString(number)

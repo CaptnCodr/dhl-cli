@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Include="Data\dpdhl_tracking-unified_1.3.1.yaml" />
     <None Include="Data\sample.csv" />
+    <Compile Include="Resources.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="AuthHandler.fs" />
@@ -24,6 +25,11 @@
     <PackageReference Include="FSharp.Data" Version="4.2.8" />
     <PackageReference Include="Argu" Version="6.1.1" />
     <PackageReference Include="SwaggerProvider" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project=".paket\Paket.Restore.targets" />
 </Project>

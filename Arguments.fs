@@ -1,6 +1,7 @@
 ﻿namespace Dhl
 
 open Argu
+open Resources
 
 module Arguments =
 
@@ -11,8 +12,8 @@ module Arguments =
         interface IArgParserTemplate with
             member this.Usage =
                 match this with 
-                | Add _ -> "Adds a tracking number to the storage."
-                | Remove _ -> "Removes the specified number from storage."
+                | Add _ -> Arguments_AddNumber.ResourceString
+                | Remove _ -> Arguments_RemoveNumber.ResourceString
 
     type CliArguments = 
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-n")>] Number of ParseResults<TrackingNumbersArgs>
@@ -26,9 +27,9 @@ module Arguments =
         interface IArgParserTemplate with
             member this.Usage =
                 match this with 
-                | Number _ -> "The tracking number options."
-                | Detail _ -> "Shows tracking details about the given number."
-                | Update -> "Updates all tracking events."
-                | SetKey _ -> "Sets the API key."
-                | GetKey -> "Gets the API key."
-                | Version -> "Gets the current version of this binary."
+                | Number _ -> Arguments_Number.ResourceString
+                | Detail _ -> Arguments_Detail.ResourceString
+                | Update -> Arguments_Update.ResourceString
+                | SetKey _ -> Arguments_SetKey.ResourceString
+                | GetKey -> Arguments_GetKey.ResourceString
+                | Version -> Arguments_Version.ResourceString
