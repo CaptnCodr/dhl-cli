@@ -7,7 +7,7 @@ open System.Resources
 module Resources = 
 
     [<Literal>]
-    let ResourceFile = "dhl-cli.Resource.Strings"
+    let ResourceFile = "dhl-cli.Resources.Strings"
 
     type Resource =
 
