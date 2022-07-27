@@ -11,11 +11,11 @@ module Program =
 
     let statusCodeToColor (code: string) = 
         match code with 
-        | "pre-transit" -> "[31;1m"
-        | "transit" -> "[93;1m"
-        | "delivered" -> "[32;1m"
-        | "failure" -> "[94;1m"
-        | "unknown" | _ -> "[90;1m"
+        | "pre-transit" -> "[97;1m" // WHITE
+        | "transit" -> "[93;1m"     // YELLOW
+        | "delivered" -> "[32;1m"   // GREEN
+        | "failure" -> "[31;1m"     // RED
+        | "unknown" | _ -> "[90;1m" // GRAY
 
     let buildColoredLine (element: string * string) =
         let esc = string (char 0x1B)
