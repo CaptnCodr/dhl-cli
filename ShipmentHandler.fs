@@ -16,13 +16,16 @@ module ShipmentHandler =
         |> fun a -> new HttpClient(a, BaseAddress=Uri(baseAdress))
         |> DhlSchema.Client
 
-    let printShipmentLine (idx: int) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
+    let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
+        if (shipment.Status.Timestamp.ToString() |> DateTime.Parse |> DateTime.Now.Subtract |> fun x -> x.Days) > 14 && shipment.Status.StatusCode = "delivered" then
+            ("removed", TrackingNumber(number) |> Repository.remove)
+        else
+            (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
 
     let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
         task {
             let! x = client.GetShipments(number, language="de")
-            return x.Shipments |> Seq.map (printShipmentLine idx)
+            return x.Shipments |> Seq.map (printShipmentLine idx number)
         } |> Async.AwaitTask |> Async.RunSynchronously
 
     let loadTrackingNumbers numbers =
