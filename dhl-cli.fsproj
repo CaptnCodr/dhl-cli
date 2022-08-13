@@ -12,6 +12,9 @@
   <ItemGroup>
     <None Include="Data\dpdhl_tracking-unified_1.3.1.yaml" />
     <None Include="Data\sample.csv" />
+    <None Include="paket.dependencies" />
+    <None Include="paket.lock" />
+    <None Include="paket.references" />
     <Compile Include="Resources.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Settings.fs" />
