@@ -24,10 +24,10 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.4" />
-    <PackageReference Include="FSharp.Data" Version="4.2.8" />
+    <PackageReference Include="FSharp.Core" Version="6.0.5" />
+    <PackageReference Include="FSharp.Data" Version="4.2.10" />
     <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="SwaggerProvider" Version="1.0.0" />
+    <PackageReference Include="SwaggerProvider" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
