@@ -63,15 +63,13 @@ module Program =
                 |> Seq.filter (fun (x, _) -> x = "pre-transit" || x = "transit")
                 |> Seq.length
 
-            let trackingNumbers = Repository.loadTrackingNumbers()
-
             let statuses =
-                trackingNumbers
+                Repository.loadTrackingNumbers()
                 |> loadTrackingNumbers
 
             File.WriteAllText(
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dhl"),
-                $"{statuses |> countTransits}/{trackingNumbers |> Seq.length}")
+                $"{statuses |> countTransits}")
 
             statuses
             |> printTrackingNumberLines
