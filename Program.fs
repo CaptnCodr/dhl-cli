@@ -2,6 +2,7 @@
 
 open Argu
 open System
+open System.IO
 open System.Reflection
 open Arguments
 open Resources
@@ -56,10 +57,23 @@ module Program =
                     |> loadTrackingNumberDetail 
                     |> printTrackingNumberLines
 
-
         | [ Update ] -> 
-            Repository.loadTrackingNumbers() 
-            |> loadTrackingNumbers 
+            let countTransits (elements) : int =
+                elements
+                |> Seq.filter (fun (x, _) -> x = "pre-transit" || x = "transit")
+                |> Seq.length
+
+            let trackingNumbers = Repository.loadTrackingNumbers()
+
+            let statuses =
+                trackingNumbers
+                |> loadTrackingNumbers
+
+            File.WriteAllText(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dhl"),
+                $"{statuses |> countTransits}/{trackingNumbers |> Seq.length}")
+
+            statuses
             |> printTrackingNumberLines
 
         | [ SetKey k ] -> 
