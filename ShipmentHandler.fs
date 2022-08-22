@@ -1,7 +1,6 @@
 ﻿namespace Dhl
 
 open SwaggerProvider
-open System
 open System.Net.Http
 
 module ShipmentHandler =
@@ -13,14 +12,17 @@ module ShipmentHandler =
 
     let client = 
         (new AuthHandler(new HttpClientHandler()))
-        |> fun a -> new HttpClient(a, BaseAddress=Uri(baseAdress))
+        |> fun a -> new HttpClient(a, BaseAddress=System.Uri(baseAdress))
         |> DhlSchema.Client
 
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        if (shipment.Status.Timestamp.ToString() |> DateTime.Parse |> DateTime.Now.Subtract |> fun x -> x.Days) > 14 && shipment.Status.StatusCode = "delivered" then
+        if (shipment.Status.Timestamp.ToString() |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> fun x -> x.Days) > 14 && shipment.Status.StatusCode = "delivered" then
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
-            (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
+            (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
+
+    let printShipmentProblem (title: string) (status: int) (detail: string) =
+        ("bla", $"{title} ({status}): {detail}")
 
     let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
         task {
@@ -34,7 +36,7 @@ module ShipmentHandler =
         |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        (event.StatusCode, $"{DateTime.Parse(event.Timestamp.ToString())}: {event.Status}")
+        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {event.Status}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) = 
         task {

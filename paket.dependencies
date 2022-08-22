@@ -3,4 +3,4 @@ source https://api.nuget.org/v3/index.json
 nuget FSharp.Core
 nuget FSharp.Data
 nuget Argu
-nuget SwaggerProvider
+nuget SwaggerProvider ~> 2.0.0-beta3
