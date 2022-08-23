@@ -1,5 +1,6 @@
 ﻿namespace Dhl
 
+open FSharp.Data
 open SwaggerProvider
 open System.Net.Http
 
@@ -10,8 +11,10 @@ module ShipmentHandler =
 
     type DhlSchema = OpenApiClientProvider<"./Data/dpdhl_tracking-unified_1.3.1.yaml">
 
+    type ErrorResponse = JsonProvider<"Data/Error.json", ResolutionFolder=__SOURCE_DIRECTORY__>
+
     let client = 
-        (new AuthHandler(new HttpClientHandler()))
+        (new AuthHandler(new ErrorHandler(new HttpClientHandler())))
         |> fun a -> new HttpClient(a, BaseAddress=System.Uri(baseAdress))
         |> DhlSchema.Client
 
@@ -21,13 +24,19 @@ module ShipmentHandler =
         else
             (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
 
-    let printShipmentProblem (title: string) (status: int) (detail: string) =
-        ("bla", $"{title} ({status}): {detail}")
+    let printShipmentProblem (exceptionMessage: string) =
+        let (number, json) = exceptionMessage |> fun s -> let i = s.IndexOf(",") in (s.Substring(0, i), s.Substring(i+1))
+        let error = json |> ErrorResponse.Parse
+        ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
     let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
         task {
-            let! x = client.GetShipments(number, language="de")
-            return x.Shipments |> Seq.map (printShipmentLine idx number)
+            try
+                let! x = client.GetShipments(number, language="de")
+                return x.Shipments |> Seq.map (printShipmentLine idx number)
+            with 
+            | ex -> 
+                return seq { ex.GetBaseException().Message |> printShipmentProblem }
         } |> Async.AwaitTask |> Async.RunSynchronously
 
     let loadTrackingNumbers numbers =

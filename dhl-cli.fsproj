@@ -7,11 +7,12 @@
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
-    <Version>0.3.0.0</Version>
+    <Version>0.5.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Data\dpdhl_tracking-unified_1.3.1.yaml" />
     <None Include="Data\sample.csv" />
+    <Content Include="Data\Error.json" />
     <None Include="paket.dependencies" />
     <None Include="paket.lock" />
     <None Include="paket.references" />
@@ -19,6 +20,7 @@
     <Compile Include="Arguments.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="AuthHandler.fs" />
+    <Compile Include="ErrorHandler.fs" />
     <Compile Include="Repository.fs" />
     <Compile Include="ShipmentHandler.fs" />
     <Compile Include="Program.fs" />
@@ -27,7 +29,7 @@
     <PackageReference Include="FSharp.Core" Version="6.0.5" />
     <PackageReference Include="FSharp.Data" Version="4.2.10" />
     <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="SwaggerProvider" Version="1.0.1" />
+    <PackageReference Include="SwaggerProvider" Version="2.0.0-beta4" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">

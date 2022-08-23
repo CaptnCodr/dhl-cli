@@ -4,8 +4,8 @@ open Argu
 open System
 open System.IO
 open System.Reflection
-open Arguments
 open Resources
+open Arguments
 open ShipmentHandler
 
 module Program =
