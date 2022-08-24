@@ -15,6 +15,7 @@ module Arguments =
                 | Add _ -> Arguments_AddNumber.ResourceString
                 | Remove _ -> Arguments_RemoveNumber.ResourceString
 
+    [<DisableHelpFlags>]
     type CliArguments = 
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-n")>] Number of ParseResults<TrackingNumbersArgs>
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-d")>] Detail of string
@@ -23,6 +24,7 @@ module Arguments =
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-s")>] SetKey of string
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-k")>] GetKey
         | [<CliPrefix(CliPrefix.None);AltCommandLine("-v")>] Version
+        | [<CliPrefix(CliPrefix.None);AltCommandLine("-h")>] Help
         
         interface IArgParserTemplate with
             member this.Usage =
@@ -33,3 +35,4 @@ module Arguments =
                 | SetKey _ -> Arguments_SetKey.ResourceString
                 | GetKey -> Arguments_GetKey.ResourceString
                 | Version -> Arguments_Version.ResourceString
+                | Help -> ""

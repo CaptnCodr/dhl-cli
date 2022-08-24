@@ -19,6 +19,7 @@ module Resources =
         | Arguments_Version
         | Arguments_AddNumber
         | Arguments_RemoveNumber
+        | Arguments_Help
         
         | Number_Added
         | Number_Removed

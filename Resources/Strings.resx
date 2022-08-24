@@ -116,6 +116,9 @@
   <data name="Arguments_Version" xml:space="preserve">
     <value>Gets the current version of this binary.</value>
   </data>
+  <data name="Arguments_Help" xml:space="preserve">
+    <value>Displays this help.</value>
+  </data>
   <data name="Arguments_AddNumber" xml:space="preserve">
     <value>Adds a tracking number to the storage.</value>
   </data>

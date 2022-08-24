@@ -84,6 +84,9 @@ module Program =
         | [ Version ] -> 
             Assembly.GetExecutingAssembly().GetName().Version |> string
 
+        | [ Help ] -> 
+            parser.PrintUsage()
+
         | _ -> parser.PrintUsage()
 
     [<EntryPoint>]
