@@ -35,4 +35,4 @@ module Arguments =
                 | SetKey _ -> Arguments_SetKey.ResourceString
                 | GetKey -> Arguments_GetKey.ResourceString
                 | Version -> Arguments_Version.ResourceString
-                | Help -> ""
+                | Help -> Arguments_Help.ResourceString
