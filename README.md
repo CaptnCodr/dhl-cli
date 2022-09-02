@@ -2,10 +2,11 @@
 
 Track your DHL shippings via CLI with current shipping events.
 
-## 1. Setup
+## 0. Setup
 
 Set application's path in system's environment "Path" variables.
 
+## 1. Using
 
 ##### Command tree of all (sub-) commands and parameters:
 ```
