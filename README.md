@@ -7,5 +7,30 @@ Track your DHL shippings via CLI with current shipping events.
 Set application's path in system's environment "Path" variables.
 
 
-___
-Type: `inv help` or `inv -h` for further information.
+##### Command tree of all (sub-) commands and parameters:
+```
+> dhl [command] [subcommand] [parameter]
+
+[ number ]
++--[ add ]
+|  +--[ number ]
++--[ remove ]
+   +--[ number ]
+
+[ detail ]
++--[ number ]
+
+[ update ]
+
+[ setkey ]
++--[ apikey ]
+
+[ getkey ]
+
+[ version ]
+
+[ help ]
+
+```
+
+Type: `dhl help` or `dhl -h` for further information.
