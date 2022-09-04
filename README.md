@@ -10,28 +10,28 @@ Set application's path in system's environment "Path" variables.
 
 ##### Command tree of all (sub-) commands and parameters:
 ```
-> dhl [command] [subcommand] [parameter]
+> dhl [command | alias] [subcommand | alias] [parameter | alias]
 
-[ number ]
-+--[ add ]
+[ number | -n ]
++--[ add | -a ]
 |  +--[ number ]
-+--[ remove ]
++--[ remove | -r ]
    +--[ number ]
 
-[ detail ]
+[ detail | -d ]
 +--[ number ]
 
-[ update ]
+[ update | -u ]
 
-[ setkey ]
-+--[ apikey ]
+[ setkey | -s ]
++--[ key ]
 
-[ getkey ]
+[ getkey | -k ]
 
-[ version ]
+[ version | -v ]
 
-[ help ]
-
+[ help | -h ]
 ```
 
-Type: `dhl help` or `dhl -h` for further information.
+Type: <br>
+`dhl help` or `dhl -h` for further information.
