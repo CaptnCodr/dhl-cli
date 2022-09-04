@@ -10,7 +10,7 @@ Set application's path in system's environment "Path" variables.
 
 ##### Command tree of all (sub-) commands and parameters:
 ```
-> dhl [command | alias] [subcommand | alias] [parameter | alias]
+> dhl [command | alias] [subcommand | alias] [parameter]
 
 [ number | -n ]
 +--[ add | -a ]
