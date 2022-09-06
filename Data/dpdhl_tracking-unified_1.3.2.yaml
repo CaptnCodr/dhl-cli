@@ -1,23 +1,26 @@
 openapi: 3.0.0
 info:
   title: DHL Shipment Tracking API
-  version: "1.3.1"
+  version: "1.3.2"
   contact:
     name: "Support"
     url: "https://developer.dhl.com/help-center"
+
   description: >-
     ### DHL Shipment Tracking API
 
     The unified DHL tracking experience.
 
-    Detailed documentation and release notes are available at https://developer.dhl/api-reference/shipment-tracking. 
+    Detailed documentation and release notes are available at https://developer.dhl/api-reference/shipment-tracking.
 
 servers:
+  - url: https://api-test.dhl.com/track
+    description: Development server
   - url: https://api-eu.dhl.com/track
     description: Production server
 
 security:
-  - ApiKeyAuth: []
+  - ApiKeyAuth: [ ]
 
 paths:
   '/shipments':
@@ -40,7 +43,7 @@ paths:
       responses:
         '200':
           description: >-
-           Shipments information for given trackingNumber were found and retrieved
+            Shipments information for given trackingNumber were found and retrieved
           headers:
             Content-Language:
               schema:
@@ -85,7 +88,7 @@ components:
       required: true
       schema:
         type: string
-        default: '00340434292135100179'
+        default: '00340434292135100186'
 
     service:
       name: service
@@ -324,6 +327,8 @@ components:
           $ref: '#/components/schemas/supermodelIoLogisticsSupportingOrganization'
         product:
           $ref: '#/components/schemas/supermodelIoLogisticsSupportingProduct'
+        provider:
+          $ref: '#/components/schemas/supermodelIoLogisticsSupportingProvider'
         receiver:
           allOf:
             - $ref: '#/components/schemas/supermodelIoLogisticsSupportingOrganization'
@@ -480,7 +485,7 @@ components:
             - /shipments?trackingNumber=7777777770&service=parcel-de
             - /shipments?trackingNumber=7777777770&service=parcel-nl
     supermodelIoLogisticsTrackingApiProblemDetail:
-      ###$ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
+      #$ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
       title: Problem Detail
       type: object
       properties:
@@ -494,7 +499,6 @@ components:
           type: string
         instance:
           type: string
-
     supermodelIoLogisticsTrackingDgfAirport:
       title: DGF Airport
       type: object
@@ -645,3 +649,43 @@ components:
           type: string
         instance:
           type: string
+    supermodelIoLogisticsSupportingProvider:
+      title: Provider
+      type: object
+      properties:
+        destinationProvider:
+          type: string
+          enum:
+            - oepag
+            - express
+            - parcel-bl
+            - bpost
+            - rapido
+            - acs-courier
+            - parcel-cz
+            - freight
+            - parcel-de
+            - trans-o-flex
+            - bring
+            - parcel-es
+            - posti
+            - relais-colis
+            - colis-prive
+            - freight-fr
+            - chronopost
+            - parcel-uk
+            - hrvatska-posta
+            - magyar-posta
+            - anpost
+            - fastway
+            - parcel-lu
+            - parcel-be
+            - parcel-nl
+            - posta
+            - slovak-parcel-service
+            - parcel-pl
+            - parcel-pt
+            - urgent-cargus
+          description: 'The name of the provider organization handling the delivery in the destination country.'
+      example:
+        destinationProvider: relais-colis
