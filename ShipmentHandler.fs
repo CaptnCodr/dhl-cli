@@ -6,20 +6,24 @@ open System.Net.Http
 
 module ShipmentHandler =
 
-    [<Literal>]
-    let baseAdress = "https://api-eu.dhl.com/track/shipments"
+    let [<Literal>] DaysAfterDelivery = 7
 
-    type DhlSchema = OpenApiClientProvider<"./Data/dpdhl_tracking-unified_1.3.1.yaml">
+    let [<Literal>] BaseAdress = "https://api-eu.dhl.com/track/shipments"
+
+    type DhlSchema = OpenApiClientProvider<"./Data/dpdhl_tracking-unified_1.3.2.yaml">
 
     type ErrorResponse = JsonProvider<"Data/Error.json", ResolutionFolder=__SOURCE_DIRECTORY__>
 
     let client = 
         (new AuthHandler(new ErrorHandler(new HttpClientHandler())))
-        |> fun a -> new HttpClient(a, BaseAddress=System.Uri(baseAdress))
+        |> fun a -> new HttpClient(a, BaseAddress=System.Uri(BaseAdress))
         |> DhlSchema.Client
 
+    let private checkShipmentDate (timstamp: string) : bool = 
+        (timstamp |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> fun x -> x.Days) > DaysAfterDelivery
+
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        if (shipment.Status.Timestamp.ToString() |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> fun x -> x.Days) > 14 && shipment.Status.StatusCode = "delivered" then
+        if shipment.Status.Timestamp.ToString() |> checkShipmentDate && shipment.Status.StatusCode = "delivered" then
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
             (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")

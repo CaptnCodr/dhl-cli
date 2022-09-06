@@ -7,10 +7,10 @@
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
-    <Version>0.5.0.1</Version>
+    <Version>0.6.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="Data\dpdhl_tracking-unified_1.3.1.yaml" />
+    <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
     <None Include="Data\sample.csv" />
     <Content Include="Data\Error.json" />
     <None Include="paket.dependencies" />
