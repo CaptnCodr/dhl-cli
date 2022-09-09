@@ -1,4 +1,6 @@
-﻿FSharp.Core
+﻿File: ResourceExtension.fs .
+
+FSharp.Core
 FSharp.Data
 Argu
 SwaggerProvider

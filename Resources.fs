@@ -1,13 +1,11 @@
 ﻿namespace Dhl
 
-open System
-open System.Reflection
-open System.Resources
+open Extensions.ResourceExt
 
 module Resources = 
-
+    
     [<Literal>]
-    let ResourceFile = "dhl-cli.Resources.Strings"
+    let private ResourceFile = "dhl-cli.Resources.Strings"
 
     type Resource =
 
@@ -30,8 +28,7 @@ module Resources =
         | IndexNotParsable
 
         member this.ResourceString =
-            this.ToString() 
-            |> ResourceManager(ResourceFile, Assembly.GetExecutingAssembly()).GetString
+            ResourceFile |> resourceManager |> getResourceString this
 
-        member this.FormattedString ([<ParamArray>] args) =
-            (this.ResourceString, args) |> String.Format
+        member this.FormattedString ([<System.ParamArray>] args) =
+            ResourceFile |> resourceManager |> getFormattedString this args

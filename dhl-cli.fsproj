@@ -7,15 +7,16 @@
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
-    <Version>0.6.0.0</Version>
+    <Version>0.7.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
     <None Include="Data\sample.csv" />
     <Content Include="Data\Error.json" />
-    <None Include="paket.dependencies" />
-    <None Include="paket.lock" />
-    <None Include="paket.references" />
+    <Compile Include="paket-files\CaptnCodr\FSharpExtensions\ResourceExtension.fs">
+      <Paket>True</Paket>
+      <Link>ResourceExtension.fs</Link>
+    </Compile>
     <Compile Include="Resources.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Settings.fs" />
@@ -24,6 +25,8 @@
     <Compile Include="Repository.fs" />
     <Compile Include="ShipmentHandler.fs" />
     <Compile Include="Program.fs" />
+    <None Include="paket.dependencies" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="6.0.5" />
