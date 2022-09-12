@@ -91,10 +91,10 @@ module Program =
 
     [<EntryPoint>]
     let main ([<ParamArray>] args: string[]) : int =
-    
         try 
             (ArgumentParser.Create<CliArguments>(), args)
-            ||> runCommands |> printfn "%s"
+            ||> runCommands 
+            |> printfn "%s"
         with 
         | ex -> eprintfn $"{ex.Message}"
 

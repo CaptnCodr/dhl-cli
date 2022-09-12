@@ -15,9 +15,9 @@
     <Content Include="Data\Error.json" />
     <Compile Include="paket-files\CaptnCodr\FSharpExtensions\ResourceExtension.fs">
       <Paket>True</Paket>
-      <Link>ResourceExtension.fs</Link>
+      <Link>Resources/ResourceExtension.fs</Link>
     </Compile>
-    <Compile Include="Resources.fs" />
+    <Compile Include="Resources\Resources.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="AuthHandler.fs" />
@@ -32,7 +32,7 @@
     <PackageReference Include="FSharp.Core" Version="6.0.5" />
     <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="SwaggerProvider" Version="2.0.0-beta4" />
+    <PackageReference Include="SwaggerProvider" Version="2.0.0-beta5" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
