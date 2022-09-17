@@ -7,7 +7,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
-    <Version>0.7.0.0</Version>
+    <Version>0.7.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
@@ -29,7 +29,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.5" />
+    <PackageReference Include="FSharp.Core" Version="6.0.6" />
     <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="Argu" Version="6.1.1" />
     <PackageReference Include="SwaggerProvider" Version="2.0.0-beta5" />
