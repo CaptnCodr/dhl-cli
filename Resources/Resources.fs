@@ -2,8 +2,8 @@
 
 open Extensions.ResourceExt
 
-module Resources = 
-    
+module Resources =
+
     [<Literal>]
     let private ResourceFile = "dhl-cli.Resources.Strings"
 
@@ -18,7 +18,7 @@ module Resources =
         | Arguments_AddNumber
         | Arguments_RemoveNumber
         | Arguments_Help
-        
+
         | Number_Added
         | Number_Removed
 
@@ -27,8 +27,7 @@ module Resources =
         | NoTrackingNumber
         | IndexNotParsable
 
-        member this.ResourceString =
-            ResourceFile |> resourceManager |> getResourceString this
+        member this.ResourceString = ResourceFile |> resourceManager |> getResourceString this
 
-        member this.FormattedString ([<System.ParamArray>] args) =
+        member this.FormattedString([<System.ParamArray>] args) =
             ResourceFile |> resourceManager |> getFormattedString this args

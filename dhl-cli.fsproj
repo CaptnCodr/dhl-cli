@@ -10,6 +10,7 @@
     <Version>0.7.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include=".config\dotnet-tools.json" />
     <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
     <None Include="Data\sample.csv" />
     <Content Include="Data\Error.json" />

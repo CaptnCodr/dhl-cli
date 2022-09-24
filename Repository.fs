@@ -12,30 +12,27 @@ type TrackingNumber = TrackingNumber of string
 
 module Repository =
 
-    let private path = 
+    let private path =
         (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dhl.csv")
         |> Path.Combine
 
-    let loadFile () =
-        path |> TrackingNumbers.Load
+    let loadFile () = path |> TrackingNumbers.Load
 
-    let saveFile (file: CsvFile<TrackingNumbers.Row>) =
-        path |> file.Save
+    let saveFile (file: CsvFile<TrackingNumbers.Row>) = path |> file.Save
 
     let loadTrackingNumbers () =
-        loadFile().Rows
-        |> Seq.map (fun r -> TrackingNumber(r))
+        loadFile().Rows |> Seq.map (fun r -> TrackingNumber(r))
 
-    let add (TrackingNumber(number)) =
-        loadFile()
-        |> fun rows -> rows.Append [ new TrackingNumbers.Row (number) ]
+    let add (TrackingNumber (number)) =
+        loadFile ()
+        |> fun rows -> rows.Append [ new TrackingNumbers.Row(number) ]
         |> saveFile
 
         Number_Added.FormattedString(number)
 
-    let remove (TrackingNumber(number)) = 
-        loadFile()
-        |> fun file -> file.Filter (fun item -> item.TrackingNumber <> number)
+    let remove (TrackingNumber (number)) =
+        loadFile ()
+        |> fun file -> file.Filter(fun item -> item.TrackingNumber <> number)
         |> saveFile
 
         Number_Removed.FormattedString(number)
