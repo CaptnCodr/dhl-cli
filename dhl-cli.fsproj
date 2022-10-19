@@ -30,12 +30,6 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="6.0.6" />
-    <PackageReference Include="FSharp.Data" Version="5.0.2" />
-    <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="SwaggerProvider" Version="2.0.0-beta5" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
