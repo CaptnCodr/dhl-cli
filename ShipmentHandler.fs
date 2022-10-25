@@ -49,6 +49,7 @@ module ShipmentHandler =
         task {
             try
                 let! x = client.GetShipments(number, language = "de")
+                do! Async.Sleep 500
                 return x.Shipments |> Seq.map (printShipmentLine idx number)
             with ex ->
                 return seq { ex.GetBaseException().Message |> printShipmentProblem }
