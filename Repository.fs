@@ -23,14 +23,14 @@ module Repository =
     let loadTrackingNumbers () =
         loadFile().Rows |> Seq.map (fun r -> TrackingNumber(r))
 
-    let add (TrackingNumber (number)) =
+    let add (TrackingNumber(number)) =
         loadFile ()
         |> fun rows -> rows.Append [ new TrackingNumbers.Row(number) ]
         |> saveFile
 
         Number_Added.FormattedString(number)
 
-    let remove (TrackingNumber (number)) =
+    let remove (TrackingNumber(number)) =
         loadFile ()
         |> fun file -> file.Filter(fun item -> item.TrackingNumber <> number)
         |> saveFile

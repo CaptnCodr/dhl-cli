@@ -45,7 +45,7 @@ module ShipmentHandler =
         let error = json |> ErrorResponse.Parse
         ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
-    let fetchTrackingNumber (idx: int) (TrackingNumber (number)) =
+    let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
         task {
             try
                 do! Async.Sleep 1000 // throttling 1 request/sec
@@ -61,9 +61,15 @@ module ShipmentHandler =
         numbers |> Seq.mapi fetchTrackingNumber |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {event.Status}")
+        let detailLine =
+            match event.Status with
+            | null
+            | "" -> event.Description
+            | _ -> event.Status
 
-    let loadTrackingNumberDetail (TrackingNumber (number)) =
+        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {detailLine}")
+
+    let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
             let! shipment = client.GetShipments(number, language = "de")
 
