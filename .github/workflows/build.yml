@@ -22,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.100
+        dotnet-version: 7.0.101
 
     - name: Install local tools
       run: dotnet tool restore
