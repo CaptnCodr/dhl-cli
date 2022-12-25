@@ -46,16 +46,12 @@ module ShipmentHandler =
         ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
     let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
-        task {
-            try
-                do! Async.Sleep 1000 // throttling 1 request/sec
-                let! x = client.GetShipments(number, language = "de")
-                return x.Shipments |> Seq.map (printShipmentLine idx number)
-            with ex ->
-                return seq { ex.GetBaseException().Message |> printShipmentProblem }
-        }
-        |> Async.AwaitTask
-        |> Async.RunSynchronously
+        try 
+            System.Threading.Thread.Sleep 500
+            let x = client.GetShipments(number, language = "de")
+            x.Result.Shipments |> Seq.map (printShipmentLine idx number)
+        with ex ->
+            seq { ex.GetBaseException().Message |> printShipmentProblem }
 
     let loadTrackingNumbers numbers =
         numbers |> Seq.mapi fetchTrackingNumber |> Seq.collect id
