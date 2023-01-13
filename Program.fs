@@ -7,6 +7,7 @@ open System.Reflection
 open Resources
 open Arguments
 open ShipmentHandler
+open System
 
 module Program =
 
@@ -61,10 +62,7 @@ module Program =
 
             let statuses = Repository.loadTrackingNumbers () |> loadTrackingNumbers
 
-            File.WriteAllText(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dhl"),
-                $"{statuses |> countTransits}"
-            )
+            Environment.SetEnvironmentVariable("DhlCount", $"{statuses |> countTransits}", EnvironmentVariableTarget.User)
 
             statuses |> printTrackingNumberLines
 
