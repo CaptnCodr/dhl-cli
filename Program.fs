@@ -2,12 +2,10 @@
 
 open Argu
 open System
-open System.IO
 open System.Reflection
 open Resources
 open Arguments
 open ShipmentHandler
-open System
 
 module Program =
 
@@ -62,7 +60,11 @@ module Program =
 
             let statuses = Repository.loadTrackingNumbers () |> loadTrackingNumbers
 
-            Environment.SetEnvironmentVariable("DhlCount", $"{statuses |> countTransits}", EnvironmentVariableTarget.User)
+            Environment.SetEnvironmentVariable(
+                "DhlCount",
+                $"{statuses |> countTransits}",
+                EnvironmentVariableTarget.User
+            )
 
             statuses |> printTrackingNumberLines
 

@@ -10,7 +10,10 @@ module ShipmentHandler =
     let DaysAfterDelivery = 7
 
     [<Literal>]
-    let BaseAdress = "https://api-eu.dhl.com/track/shipments"
+    let MaxRetries = 3
+
+    [<Literal>]
+    let ApiAddress = "https://api-eu.dhl.com/track/shipments"
 
     type DhlSchema = OpenApiClientProvider<"./Data/dpdhl_tracking-unified_1.3.2.yaml">
 
@@ -18,7 +21,7 @@ module ShipmentHandler =
 
     let client =
         (new AuthHandler(new ErrorHandler(new HttpClientHandler())))
-        |> fun a -> new HttpClient(a, BaseAddress = System.Uri(BaseAdress))
+        |> fun a -> new HttpClient(a, BaseAddress = System.Uri(ApiAddress))
         |> DhlSchema.Client
 
     let private checkShipmentDate (timstamp: string) : bool =
@@ -45,16 +48,22 @@ module ShipmentHandler =
         let error = json |> ErrorResponse.Parse
         ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
-    let fetchTrackingNumber (idx: int) (TrackingNumber(number)) =
-        try 
-            System.Threading.Thread.Sleep 500
-            let x = client.GetShipments(number, language = "de")
-            x.Result.Shipments |> Seq.map (printShipmentLine idx number)
-        with ex ->
-            seq { ex.GetBaseException().Message |> printShipmentProblem }
+    let rec fetchTrackingNumber (retries: int) (idx: int) (TrackingNumber(number)) =
+        task {
+            try
+                let! x = client.GetShipments(number, language = "de")
+                return x.Shipments |> Seq.map (printShipmentLine idx number)
+            with ex ->
+                if retries = 0 then
+                    return seq { ex.GetBaseException().Message |> printShipmentProblem }
+                else
+                    return (fetchTrackingNumber (retries - 1) idx (TrackingNumber(number)))
+        }
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
 
     let loadTrackingNumbers numbers =
-        numbers |> Seq.mapi fetchTrackingNumber |> Seq.collect id
+        numbers |> Seq.mapi (fetchTrackingNumber MaxRetries) |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
         let detailLine =
