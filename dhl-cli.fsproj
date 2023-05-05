@@ -7,7 +7,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <Version>0.9.5.0</Version>
+    <Version>0.10.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".config\dotnet-tools.json" />
@@ -26,6 +26,7 @@
     <Compile Include="Repository.fs" />
     <Compile Include="ShipmentHandler.fs" />
     <Compile Include="Program.fs" />
+    <None Include="Data\utapi-traking-api-1.4.1.yaml" />
     <None Include="paket.dependencies" />
     <None Include="paket.references" />
   </ItemGroup>
