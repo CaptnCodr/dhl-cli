@@ -11,7 +11,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".config\dotnet-tools.json" />
-    <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
     <None Include="Data\sample.csv" />
     <Content Include="Data\Error.json" />
     <Compile Include="paket-files\CaptnCodr\FSharpExtensions\ResourceExtension.fs">
