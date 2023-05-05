@@ -7,11 +7,10 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <Version>0.9.5.0</Version>
+    <Version>0.10.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".config\dotnet-tools.json" />
-    <None Include="Data\dpdhl_tracking-unified_1.3.2.yaml" />
     <None Include="Data\sample.csv" />
     <Content Include="Data\Error.json" />
     <Compile Include="paket-files\CaptnCodr\FSharpExtensions\ResourceExtension.fs">
@@ -26,6 +25,7 @@
     <Compile Include="Repository.fs" />
     <Compile Include="ShipmentHandler.fs" />
     <Compile Include="Program.fs" />
+    <None Include="Data\utapi-traking-api-1.4.1.yaml" />
     <None Include="paket.dependencies" />
     <None Include="paket.references" />
   </ItemGroup>

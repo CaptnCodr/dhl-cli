@@ -15,7 +15,7 @@ module ShipmentHandler =
     [<Literal>]
     let ApiAddress = "https://api-eu.dhl.com/track/shipments"
 
-    type DhlSchema = OpenApiClientProvider<"./Data/dpdhl_tracking-unified_1.3.2.yaml">
+    type DhlSchema = OpenApiClientProvider<"./Data/utapi-traking-api-1.4.1.yaml">
 
     type ErrorResponse = JsonProvider<"Data/Error.json", ResolutionFolder=__SOURCE_DIRECTORY__>
 

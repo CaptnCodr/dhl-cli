@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
   title: DHL Shipment Tracking API
-  version: "1.3.2"
+  version: "1.4.1"
   contact:
     name: "Support"
     url: "https://developer.dhl.com/help-center"
-
   description: >-
     ### DHL Shipment Tracking API
 
     The unified DHL tracking experience.
 
     Detailed documentation and release notes are available at https://developer.dhl/api-reference/shipment-tracking.
+
 
 servers:
   - url: https://api-test.dhl.com/track
@@ -110,6 +110,7 @@ components:
           - parcel-nl # eCS NL (Parcel BNL/PDS)
           - parcel-pl # eCS PL (Parcel PL/TNT)
           - dsc       # DSC (Connected View)
+          - ecommerce-europe # eCS Europe
 
     language:
       name: language
@@ -284,6 +285,7 @@ components:
             - dsc
             - dgf
             - ecommerce
+            - ecommerce-europe
           example: express
         origin:
           $ref: '#/components/schemas/supermodelIoLogisticsSupportingPlace'
@@ -434,9 +436,10 @@ components:
             - delivered
             - failure
             - unknown
+          example: transit
         status:
           type: string
-          example: DELIVERED
+          example: customs inspection
         description:
           type: string
           example: JESSICA
@@ -484,21 +487,8 @@ components:
           example:
             - /shipments?trackingNumber=7777777770&service=parcel-de
             - /shipments?trackingNumber=7777777770&service=parcel-nl
-    supermodelIoLogisticsTrackingApiProblemDetail:
-      #$ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
-      title: Problem Detail
-      type: object
-      properties:
-        type:
-          type: string
-        title:
-          type: string
-        status:
-          type: number
-        detail:
-          type: string
-        instance:
-          type: string
+    #supermodelIoLogisticsTrackingApiProblemDetail:
+    #  $ref: '#/components/schemas/supermodelIoLogisticsApiProblemDetail'
     supermodelIoLogisticsTrackingDgfAirport:
       title: DGF Airport
       type: object
