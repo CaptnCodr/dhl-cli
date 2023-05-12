@@ -6,4 +6,4 @@ github CaptnCodr/FSharpExtensions:main ResourceExtension.fs
 nuget FSharp.Core
 nuget FSharp.Data
 nuget Argu
-nuget SwaggerProvider ~> 2.0.0-beta6
+nuget SwaggerProvider ~> 2.0.0-beta9
