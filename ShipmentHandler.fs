@@ -38,7 +38,7 @@ module ShipmentHandler =
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
             (shipment.Status.StatusCode,
-             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Status}")
+             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Description}")
 
     let printShipmentProblem (exceptionMessage: string) =
         let (number, json) =
@@ -66,13 +66,7 @@ module ShipmentHandler =
         numbers |> Seq.mapi (fetchTrackingNumber MaxRetries) |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        let detailLine =
-            match event.Status with
-            | null
-            | "" -> event.Description
-            | _ -> event.Status
-
-        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {detailLine}")
+        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {event.Description}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
