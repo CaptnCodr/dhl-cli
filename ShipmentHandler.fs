@@ -31,14 +31,16 @@ module ShipmentHandler =
          |> fun x -> x.Days) > DaysAfterDelivery
 
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        if
-            shipment.Status.Timestamp.ToString() |> checkShipmentDate
-            && shipment.Status.StatusCode = "delivered"
+        if shipment.Status.Timestamp.ToString() |> checkShipmentDate && shipment.Status.StatusCode = "delivered"
         then
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
-            (shipment.Status.StatusCode,
-             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipment.Status.Description}")
+            let shipmentLine =
+                match shipment.Status.Description with 
+                | null | "" -> shipment.Status.Status
+                | _ -> shipment.Status.Description
+
+            (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine}")
 
     let printShipmentProblem (exceptionMessage: string) =
         let (number, json) =
@@ -66,7 +68,12 @@ module ShipmentHandler =
         numbers |> Seq.mapi (fetchTrackingNumber MaxRetries) |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {event.Description}")
+        let eventLine = 
+            match event.Description with 
+            | null | "" -> event.Status
+            | _ -> event.Description
+
+        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {eventLine}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
