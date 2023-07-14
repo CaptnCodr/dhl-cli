@@ -104,6 +104,9 @@
   <data name="Arguments_Detail" xml:space="preserve">
     <value>Shows tracking details about the given number.</value>
   </data>
+  <data name="Arguments_Package" xml:space="preserve">
+    <value>Shows package dimensions and weight about the given tracking number.</value>
+  </data>
   <data name="Arguments_Update" xml:space="preserve">
     <value>Updates all tracking events.</value>
   </data>

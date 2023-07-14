@@ -51,6 +51,22 @@ module Program =
                 | (_, _) -> IndexNotParsable.ResourceString
 
             | _ -> TrackingNumber(d) |> loadTrackingNumberDetail |> printTrackingNumberLines
+            
+        | [ Package p ] ->
+
+            match p with
+            | l when l.Length < 7 ->
+
+                match Int32.TryParse(l) with
+                | true, i ->
+                    Repository.loadTrackingNumbers ()
+                    |> fun n -> n |> Seq.toArray |> Array.tryItem i
+                    |> function
+                        | Some v -> v |> loadTrackingNumberPackageDetails
+                        | None -> NoTrackingNumber.ResourceString
+                | (_, _) -> IndexNotParsable.ResourceString
+
+            | _ -> TrackingNumber(p) |> loadTrackingNumberPackageDetails
 
         | [ Update ] ->
             let countTransits (elements) : int =
