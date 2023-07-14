@@ -21,6 +21,9 @@ Set application's path in system's environment "Path" variables.
 [ detail | -d ]
 +--[ number ]
 
+[ package | -p ]
++--[ number ]
+
 [ update | -u ]
 
 [ setkey | -s ]
