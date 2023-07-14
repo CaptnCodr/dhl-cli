@@ -19,6 +19,8 @@ module ShipmentHandler =
 
     type ErrorResponse = JsonProvider<"Data/Error.json", ResolutionFolder=__SOURCE_DIRECTORY__>
 
+    type Dimension = JsonProvider<"""{ "value": 0.709, "unitText": "kg" }""">
+
     let client =
         (new AuthHandler(new ErrorHandler(new HttpClientHandler())))
         |> fun a -> new HttpClient(a, BaseAddress = System.Uri(ApiAddress))
@@ -50,11 +52,17 @@ module ShipmentHandler =
         let error = json |> ErrorResponse.Parse
         ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
+    let getShipments trackingNumber = 
+        task {
+            let! x = client.GetShipments(trackingNumber, language = "de")
+            return x.Shipments
+        }
+
     let rec fetchTrackingNumber (retries: int) (idx: int) (TrackingNumber(number)) =
         task {
             try
-                let! x = client.GetShipments(number, language = "de")
-                return x.Shipments |> Seq.map (printShipmentLine idx number)
+                let! shipments = getShipments(number)
+                return shipments |> Seq.map (printShipmentLine idx number)
             with ex ->
                 if retries = 0 then
                     return seq { ex.GetBaseException().Message |> printShipmentProblem }
@@ -77,12 +85,33 @@ module ShipmentHandler =
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
-            let! shipment = client.GetShipments(number, language = "de")
+            let! shipments = getShipments(number)
+            return shipments |> Seq.head |> fun s -> s.Events |> Seq.map printShipmentEvent
+        }
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
 
-            return
-                shipment.Shipments
-                |> Seq.head
-                |> fun s -> s.Events |> Seq.map printShipmentEvent
+    let getDimension dimension = 
+        match dimension with 
+        | null -> ""
+        | _ -> 
+            let dim = Dimension.Parse(dimension.ToString())
+            match dim.UnitText with 
+            | "m" -> $"{(dim.Value*100.0m):N1} cm"
+            | _ -> $"{dim.Value} {dim.UnitText}"
+
+    let printPackageDetails (details: DhlSchema.supermodelIoLogisticsTrackingShipmentDetails) = 
+        let dimensions = 
+            match details.Dimensions with 
+            | null -> ""
+            | _ as d -> 
+                $"\nWidth: {getDimension(d.Width)}\nHeight: {getDimension(d.Height)}\nLength: {getDimension(d.Length)}"
+        $"Weight: {getDimension(details.Weight)}{dimensions}"
+
+    let loadTrackingNumberPackageDetails (TrackingNumber(number)) =
+        task {
+            let! shipments = getShipments(number)
+            return shipments |> Seq.head |> fun s -> s.Details |> printPackageDetails
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously

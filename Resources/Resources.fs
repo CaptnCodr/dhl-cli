@@ -11,6 +11,7 @@ module Resources =
 
         | Arguments_Number
         | Arguments_Detail
+        | Arguments_Package
         | Arguments_Update
         | Arguments_SetKey
         | Arguments_GetKey
