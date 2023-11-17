@@ -32,7 +32,6 @@ module Repository =
 
     let remove (TrackingNumber(number)) =
         loadFile ()
-        |> fun file -> file.Filter(fun item -> item.TrackingNumber <> number)
-        |> saveFile
+        |> fun file -> file.Filter(fun item -> item.TrackingNumber <> number) |> saveFile
 
         Number_Removed.FormattedString(number)

@@ -51,7 +51,7 @@ module Program =
                 | (_, _) -> IndexNotParsable.ResourceString
 
             | _ -> TrackingNumber(d) |> loadTrackingNumberDetail |> printTrackingNumberLines
-            
+
         | [ Package p ] ->
 
             match p with
