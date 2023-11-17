@@ -1,9 +1,9 @@
 source https://api.nuget.org/v3/index.json
-framework: net7.0
+framework: net8.0
 
 github CaptnCodr/FSharpExtensions:main ResourceExtension.fs
 
 nuget FSharp.Core
 nuget FSharp.Data
 nuget Argu
-nuget SwaggerProvider ~> 2.0.0-theta-002
+nuget SwaggerProvider

@@ -27,22 +27,23 @@ module ShipmentHandler =
         |> DhlSchema.Client
 
     let private checkShipmentDate (timstamp: string) : bool =
-        (timstamp
-         |> System.DateTime.Parse
-         |> System.DateTime.Now.Subtract
-         |> fun x -> x.Days) > DaysAfterDelivery
+        (timstamp |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> _.Days) > DaysAfterDelivery
 
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
-        if shipment.Status.Timestamp.ToString() |> checkShipmentDate && shipment.Status.StatusCode = "delivered"
+        if
+            shipment.Status.Timestamp.ToString() |> checkShipmentDate
+            && shipment.Status.StatusCode = "delivered"
         then
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
             let shipmentLine =
-                match shipment.Status.Description with 
-                | null | "" -> shipment.Status.Status
+                match shipment.Status.Description with
+                | null
+                | "" -> shipment.Status.Status
                 | _ -> shipment.Status.Description
 
-            (shipment.Status.StatusCode, $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine}")
+            (shipment.Status.StatusCode,
+             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine}")
 
     let printShipmentProblem (exceptionMessage: string) =
         let (number, json) =
@@ -52,7 +53,7 @@ module ShipmentHandler =
         let error = json |> ErrorResponse.Parse
         ("error", $"{number} -> {error.Status} - {error.Title}: {error.Detail}")
 
-    let getShipments trackingNumber = 
+    let getShipments trackingNumber =
         task {
             let! x = client.GetShipments(trackingNumber, language = "de")
             return x.Shipments
@@ -61,7 +62,7 @@ module ShipmentHandler =
     let rec fetchTrackingNumber (retries: int) (idx: int) (TrackingNumber(number)) =
         task {
             try
-                let! shipments = getShipments(number)
+                let! shipments = getShipments (number)
                 return shipments |> Seq.map (printShipmentLine idx number)
             with ex ->
                 if retries = 0 then
@@ -76,42 +77,45 @@ module ShipmentHandler =
         numbers |> Seq.mapi (fetchTrackingNumber MaxRetries) |> Seq.collect id
 
     let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
-        let eventLine = 
-            match event.Description with 
-            | null | "" -> event.Status
+        let eventLine =
+            match event.Description with
+            | null
+            | "" -> event.Status
             | _ -> event.Description
 
         (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {eventLine}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
-            let! shipments = getShipments(number)
-            return shipments |> Seq.head |> fun s -> s.Events |> Seq.map printShipmentEvent
+            let! shipments = getShipments (number)
+            return shipments |> Seq.head |> (fun s -> s.Events |> Seq.map printShipmentEvent)
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously
 
-    let getDimension dimension = 
-        match dimension with 
+    let getDimension dimension =
+        match dimension with
         | null -> ""
-        | _ -> 
+        | _ ->
             let dim = Dimension.Parse(dimension.ToString())
-            match dim.UnitText with 
-            | "m" -> $"{(dim.Value*100.0m):N1} cm"
+
+            match dim.UnitText with
+            | "m" -> $"{(dim.Value * 100.0m):N1} cm"
             | _ -> $"{dim.Value} {dim.UnitText}"
 
-    let printPackageDetails (details: DhlSchema.supermodelIoLogisticsTrackingShipmentDetails) = 
-        let dimensions = 
-            match details.Dimensions with 
+    let printPackageDetails (details: DhlSchema.supermodelIoLogisticsTrackingShipmentDetails) =
+        let dimensions =
+            match details.Dimensions with
             | null -> ""
-            | _ as d -> 
-                $"\nWidth: {getDimension(d.Width)}\nHeight: {getDimension(d.Height)}\nLength: {getDimension(d.Length)}"
-        $"Weight: {getDimension(details.Weight)}{dimensions}"
+            | _ as d ->
+                $"\nWidth: {getDimension (d.Width)}\nHeight: {getDimension (d.Height)}\nLength: {getDimension (d.Length)}"
+
+        $"Weight: {getDimension (details.Weight)}{dimensions}"
 
     let loadTrackingNumberPackageDetails (TrackingNumber(number)) =
         task {
-            let! shipments = getShipments(number)
-            return shipments |> Seq.head |> fun s -> s.Details |> printPackageDetails
+            let! shipments = getShipments (number)
+            return shipments |> Seq.head |> (fun s -> s.Details |> printPackageDetails)
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously
