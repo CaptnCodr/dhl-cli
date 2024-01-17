@@ -20,6 +20,7 @@ module Arguments =
         | [<CliPrefix(CliPrefix.None); AltCommandLine("-n")>] Number of ParseResults<TrackingNumbersArgs>
         | [<CliPrefix(CliPrefix.None); AltCommandLine("-d")>] Detail of number: string
         | [<CliPrefix(CliPrefix.None); AltCommandLine("-p")>] Package of number: string
+        | [<CliPrefix(CliPrefix.None); AltCommandLine("-w")>] Weblink of number: string
         | [<CliPrefix(CliPrefix.None); AltCommandLine("-u")>] Update
 
         | [<CliPrefix(CliPrefix.None); AltCommandLine("-s")>] SetKey of key: string
@@ -33,6 +34,7 @@ module Arguments =
                 | Number _ -> Arguments_Number.ResourceString
                 | Detail _ -> Arguments_Detail.ResourceString
                 | Package _ -> Arguments_Package.ResourceString
+                | Weblink _ -> Arguments_Weblink.ResourceString
                 | Update -> Arguments_Update.ResourceString
                 | SetKey _ -> Arguments_SetKey.ResourceString
                 | GetKey -> Arguments_GetKey.ResourceString

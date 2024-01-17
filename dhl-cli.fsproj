@@ -7,7 +7,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <Version>0.12.1.0</Version>
+    <Version>0.13.0.0</Version>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
   <ItemGroup>

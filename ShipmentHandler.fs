@@ -26,8 +26,8 @@ module ShipmentHandler =
         |> fun a -> new HttpClient(a, BaseAddress = System.Uri(ApiAddress))
         |> DhlSchema.Client
 
-    let private checkShipmentDate (timstamp: string) : bool =
-        (timstamp |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> _.Days) > DaysAfterDelivery
+    let private checkShipmentDate (timestamp: string) : bool =
+        (timestamp |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> _.Days) > DaysAfterDelivery
 
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
         if
@@ -46,7 +46,7 @@ module ShipmentHandler =
              $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine}")
 
     let printShipmentProblem (exceptionMessage: string) =
-        let (number, json) =
+        let number, json =
             exceptionMessage
             |> fun s -> let i = s.IndexOf(",") in (s.Substring(0, i), s.Substring(i + 1))
 
@@ -62,7 +62,7 @@ module ShipmentHandler =
     let rec fetchTrackingNumber (retries: int) (idx: int) (TrackingNumber(number)) =
         task {
             try
-                let! shipments = getShipments (number)
+                let! shipments = getShipments number
                 return shipments |> Seq.map (printShipmentLine idx number)
             with ex ->
                 if retries = 0 then
@@ -87,7 +87,7 @@ module ShipmentHandler =
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
-            let! shipments = getShipments (number)
+            let! shipments = getShipments number
             return shipments |> Seq.head |> (fun s -> s.Events |> Seq.map printShipmentEvent)
         }
         |> Async.AwaitTask
@@ -107,15 +107,23 @@ module ShipmentHandler =
         let dimensions =
             match details.Dimensions with
             | null -> ""
-            | _ as d ->
-                $"\nWidth: {getDimension (d.Width)}\nHeight: {getDimension (d.Height)}\nLength: {getDimension (d.Length)}"
+            | d ->
+                $"\nWidth: {getDimension d.Width}\nHeight: {getDimension d.Height}\nLength: {getDimension d.Length}"
 
-        $"Weight: {getDimension (details.Weight)}{dimensions}"
+        $"Weight: {getDimension details.Weight}{dimensions}"
 
     let loadTrackingNumberPackageDetails (TrackingNumber(number)) =
         task {
-            let! shipments = getShipments (number)
+            let! shipments = getShipments number
             return shipments |> Seq.head |> (fun s -> s.Details |> printPackageDetails)
+        }
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
+
+    let getWeblink (TrackingNumber(number)) =
+        task {
+            let! shipments = getShipments number
+            return shipments |> Seq.head |> _.ServiceUrl |> string
         }
         |> Async.AwaitTask
         |> Async.RunSynchronously
