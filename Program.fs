@@ -25,6 +25,21 @@ module Program =
     let printTrackingNumberLines elements =
         elements |> Seq.map buildColoredLine |> String.concat Environment.NewLine
 
+    let matchTrackingNumberOrIndex (value: string) (execFunc: TrackingNumber -> string) =
+        match value with
+        | l when l.Length < 7 ->
+
+            match Int32.TryParse(l) with
+            | true, i ->
+                Repository.loadTrackingNumbers ()
+                |> fun n -> n |> Seq.toArray |> Array.tryItem i
+                |> function
+                    | Some v -> v |> execFunc
+                    | None -> NoTrackingNumber.ResourceString
+            | _, _ -> IndexNotParsable.ResourceString
+
+        | _ -> TrackingNumber(value) |> execFunc
+
     let runCommands (parser: ArgumentParser<CliArguments>) (args: string array) =
         match (parser.Parse args).GetAllResults() with
         | [ Number n ] ->
@@ -36,40 +51,14 @@ module Program =
 
             | _ -> parser.PrintUsage()
 
-        | [ Detail d ] ->
+        | [ Detail d ] -> matchTrackingNumberOrIndex d (loadTrackingNumberDetail >> printTrackingNumberLines)
 
-            match d with
-            | l when l.Length < 7 ->
+        | [ Package p ] -> matchTrackingNumberOrIndex p loadTrackingNumberPackageDetails
 
-                match Int32.TryParse(l) with
-                | true, i ->
-                    Repository.loadTrackingNumbers ()
-                    |> fun n -> n |> Seq.toArray |> Array.tryItem i
-                    |> function
-                        | Some v -> v |> loadTrackingNumberDetail |> printTrackingNumberLines
-                        | None -> NoTrackingNumber.ResourceString
-                | (_, _) -> IndexNotParsable.ResourceString
-
-            | _ -> TrackingNumber(d) |> loadTrackingNumberDetail |> printTrackingNumberLines
-
-        | [ Package p ] ->
-
-            match p with
-            | l when l.Length < 7 ->
-
-                match Int32.TryParse(l) with
-                | true, i ->
-                    Repository.loadTrackingNumbers ()
-                    |> fun n -> n |> Seq.toArray |> Array.tryItem i
-                    |> function
-                        | Some v -> v |> loadTrackingNumberPackageDetails
-                        | None -> NoTrackingNumber.ResourceString
-                | (_, _) -> IndexNotParsable.ResourceString
-
-            | _ -> TrackingNumber(p) |> loadTrackingNumberPackageDetails
+        | [ Weblink w ] -> matchTrackingNumberOrIndex w getWeblink
 
         | [ Update ] ->
-            let countTransits (elements) : int =
+            let countTransits elements : int =
                 elements
                 |> Seq.filter (fun (x, _) -> x = "pre-transit" || x = "transit")
                 |> Seq.length

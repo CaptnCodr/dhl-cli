@@ -24,6 +24,9 @@ Set application's path in system's environment "Path" variables.
 [ package | -p ]
 +--[ number ]
 
+[ weblink | -w ]
++--[ number ]
+
 [ update | -u ]
 
 [ setkey | -s ]
