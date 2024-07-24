@@ -41,9 +41,24 @@ module ShipmentHandler =
                 | null
                 | "" -> shipment.Status.Status
                 | _ -> shipment.Status.Description
+                
+            let dateOfDelivery =
+                match shipment.EstimatedTimeOfDelivery with
+                | null -> ""
+                | dod -> $"-> {System.DateOnly.Parse(dod.ToString())}"
+
+            let timeFrame =
+                match shipment.EstimatedDeliveryTimeFrame with
+                | null -> ""
+                | tf -> $" / {System.DateTime.Parse(tf.ToString())}"
+
+            let deliveryRemark =
+                match shipment.EstimatedTimeOfDeliveryRemark with
+                | null -> ""
+                | remark -> $" ({remark.ToString()})"
 
             (shipment.Status.StatusCode,
-             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine}")
+             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine} {dateOfDelivery}{timeFrame}{deliveryRemark}")
 
     let printShipmentProblem (exceptionMessage: string) =
         let number, json =
@@ -107,8 +122,7 @@ module ShipmentHandler =
         let dimensions =
             match details.Dimensions with
             | null -> ""
-            | d ->
-                $"\nWidth: {getDimension d.Width}\nHeight: {getDimension d.Height}\nLength: {getDimension d.Length}"
+            | d -> $"\nWidth: {getDimension d.Width}\nHeight: {getDimension d.Height}\nLength: {getDimension d.Length}"
 
         $"Weight: {getDimension details.Weight}{dimensions}"
 
