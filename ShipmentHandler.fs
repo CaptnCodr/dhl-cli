@@ -29,6 +29,9 @@ module ShipmentHandler =
     let private checkShipmentDate (timestamp: string) : bool =
         (timestamp |> System.DateTime.Parse |> System.DateTime.Now.Subtract |> _.Days) > DaysAfterDelivery
 
+    let private dateTimeStringToTimeOnly (dateTime: string) =
+        dateTime |> System.DateTime.Parse |> System.TimeOnly.FromDateTime
+    
     let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
         if
             shipment.Status.Timestamp.ToString() |> checkShipmentDate
@@ -50,7 +53,7 @@ module ShipmentHandler =
             let timeFrame =
                 match shipment.EstimatedDeliveryTimeFrame with
                 | null -> ""
-                | tf -> $" / {System.DateTime.Parse(tf.ToString())}"
+                | tf -> $" ({tf.EstimatedFrom.ToString() |> dateTimeStringToTimeOnly}-{tf.EstimatedThrough.ToString() |> dateTimeStringToTimeOnly})"
 
             let deliveryRemark =
                 match shipment.EstimatedTimeOfDeliveryRemark with
