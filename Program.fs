@@ -11,10 +11,10 @@ module Program =
 
     let statusCodeToColor (code: string) =
         match code with
-        | "pre-transit" -> "[97;1m" // WHITE
-        | "transit" -> "[93;1m" // YELLOW
-        | "delivered" -> "[32;1m" // GREEN
-        | "failure" -> "[31;1m" // RED
+        | "Pre-transit" -> "[97;1m" // WHITE
+        | "Transit" -> "[93;1m" // YELLOW
+        | "Delivered" -> "[32;1m" // GREEN
+        | "Failure" -> "[31;1m" // RED
         | "unknown"
         | _ -> "[90;1m" // GRAY
 

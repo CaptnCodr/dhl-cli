@@ -2,10 +2,10 @@
 
 open System.Net.Http
 
-type AuthHandler(messagehandler) =
-    inherit DelegatingHandler(messagehandler)
+type AuthHandler(messageHandler) =
+    inherit DelegatingHandler(messageHandler)
 
-    override __.SendAsync(request, cancellationToken) =
+    override _.SendAsync(request, cancellationToken) =
         request.Headers.TryAddWithoutValidation("DHL-API-Key", Settings.getSystemKey ())
         |> ignore
 

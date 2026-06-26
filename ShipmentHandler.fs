@@ -15,11 +15,9 @@ module ShipmentHandler =
     [<Literal>]
     let ApiAddress = "https://api-eu.dhl.com/track/shipments"
 
-    type DhlSchema = OpenApiClientProvider<"./Data/utapi-traking-api-1.4.1.yaml">
+    type DhlSchema = OpenApiClientProvider<"./Data/unified-tracking-api.1.5.8.yaml">
 
     type ErrorResponse = JsonProvider<"Data/Error.json", ResolutionFolder=__SOURCE_DIRECTORY__>
-
-    type Dimension = JsonProvider<"""{ "value": 0.709, "unitText": "kg" }""">
 
     let client =
         (new AuthHandler(new ErrorHandler(new HttpClientHandler())))
@@ -31,37 +29,37 @@ module ShipmentHandler =
 
     let private dateTimeStringToTimeOnly (dateTime: string) =
         dateTime |> System.DateTime.Parse |> System.TimeOnly.FromDateTime
-    
-    let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.supermodelIoLogisticsTrackingShipment) =
+
+    let printShipmentLine (idx: int) (number: string) (shipment: DhlSchema.TrackingShipment) =
         if
             shipment.Status.Timestamp.ToString() |> checkShipmentDate
-            && shipment.Status.StatusCode = "delivered"
+            && shipment.Status.StatusCode.ToString() = "delivered"
         then
             ("removed", TrackingNumber(number) |> Repository.remove)
         else
             let shipmentLine =
                 match shipment.Status.Description with
-                | null
-                | "" -> shipment.Status.Status
-                | _ -> shipment.Status.Description
-                
+                | Some d -> d
+                | None -> shipment.Status.Status.Value
+
             let dateOfDelivery =
                 match shipment.EstimatedTimeOfDelivery with
-                | null -> ""
-                | dod -> $"-> {System.DateOnly.Parse(dod.ToString())}"
+                | None -> ""
+                | Some dod -> $"-> {System.DateOnly.Parse(dod.ToString())}"
 
             let timeFrame =
                 match shipment.EstimatedDeliveryTimeFrame with
                 | null -> ""
-                | tf -> $" ({tf.EstimatedFrom.ToString() |> dateTimeStringToTimeOnly}-{tf.EstimatedThrough.ToString() |> dateTimeStringToTimeOnly})"
+                | tf ->
+                    $" ({tf.EstimatedFrom.ToString() |> dateTimeStringToTimeOnly}-{tf.EstimatedThrough.ToString() |> dateTimeStringToTimeOnly})"
 
             let deliveryRemark =
                 match shipment.EstimatedTimeOfDeliveryRemark with
-                | null -> ""
-                | remark -> $" ({remark.ToString()})"
+                | None -> ""
+                | Some remark -> $" ({remark.ToString()})"
 
-            (shipment.Status.StatusCode,
-             $"[{idx}] {shipment.Id} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine} {dateOfDelivery}{timeFrame}{deliveryRemark}")
+            (shipment.Status.StatusCode.ToString(),
+             $"[{idx}] {shipment.Id.Value} @ ({System.DateTime.Parse(shipment.Status.Timestamp.ToString())}): {shipmentLine} {dateOfDelivery}{timeFrame}{deliveryRemark}")
 
     let printShipmentProblem (exceptionMessage: string) =
         let number, json =
@@ -73,7 +71,7 @@ module ShipmentHandler =
 
     let getShipments trackingNumber =
         task {
-            let! x = client.GetShipments(trackingNumber, language = "de")
+            let! x = client.GetTrackingShipment(trackingNumber, language = Some("de"))
             return x.Shipments
         }
 
@@ -94,14 +92,13 @@ module ShipmentHandler =
     let loadTrackingNumbers numbers =
         numbers |> Seq.mapi (fetchTrackingNumber MaxRetries) |> Seq.collect id
 
-    let printShipmentEvent (event: DhlSchema.supermodelIoLogisticsTrackingShipmentEvent) =
+    let printShipmentEvent (event: DhlSchema.TrackingShipmentEvent) =
         let eventLine =
             match event.Description with
-            | null
-            | "" -> event.Status
-            | _ -> event.Description
+            | Some d -> d
+            | None -> event.Status.Value
 
-        (event.StatusCode, $"{System.DateTime.Parse(event.Timestamp.ToString())}: {eventLine}")
+        (event.StatusCode.ToString(), $"{System.DateTime.Parse(event.Timestamp.ToString())}: {eventLine}")
 
     let loadTrackingNumberDetail (TrackingNumber(number)) =
         task {
@@ -111,17 +108,12 @@ module ShipmentHandler =
         |> Async.AwaitTask
         |> Async.RunSynchronously
 
-    let getDimension dimension =
-        match dimension with
-        | null -> ""
-        | _ ->
-            let dim = Dimension.Parse(dimension.ToString())
+    let getDimension (dimension: DhlSchema.QuantitativeValue) =
+        match dimension.UnitText.Value with
+        | "m" -> $"{((decimal) dimension.Value.Value * 100.0m):N1} cm"
+        | _ -> $"{dimension.Value.Value} {dimension.UnitText.Value}"
 
-            match dim.UnitText with
-            | "m" -> $"{(dim.Value * 100.0m):N1} cm"
-            | _ -> $"{dim.Value} {dim.UnitText}"
-
-    let printPackageDetails (details: DhlSchema.supermodelIoLogisticsTrackingShipmentDetails) =
+    let printPackageDetails (details: DhlSchema.TrackingShipmentDetails) =
         let dimensions =
             match details.Dimensions with
             | null -> ""
